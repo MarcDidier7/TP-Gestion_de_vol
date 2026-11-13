@@ -1,0 +1,96 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+enum StatutReservation { 
+  EN_ATTENTE
+  VALIDEE
+  ANNULEE 
+}
+
+enum ModePaiement { 
+  ESPECES
+  CARTE
+  MOBILE_MONEY 
+}
+
+enum StatutRemboursement { 
+  AUCUN
+  TOTAL
+  PARTIEL
+  NON_REMBOURSABLE 
+}
+
+class Passager {
+ -idPassager : int
+ -nom : string
+ -prenom : string
+ -telephone : string
+ -numeroPiece : string
+ +Passager(id, nom, prenom, tel, piece)
+ +afficher() : void
+}
+
+class Vol {
+ -numeroVol : string
+ -villeDepart : string
+ -villeArrivee : string
+ -dateDepart : Date
+ -capacite : int
+ -nbPlacesOccupees : int
+ -prix : double
+ +placesDisponibles() : int
+ +estDisponible() : bool
+ +occuperPlace() : void
+ +libererPlace() : void
+ +afficher() : void
+}
+
+class Reservation {
+ -idReservation : int
+ -dateReservation : Date
+ -statut : StatutReservation
+ -montant : double
+ +valider() : void
+ +annuler() : void
+ +estPayee() : bool
+ +estAnnulee() : bool
+ +afficher() : void
+}
+note bottom of Reservation : Unicite : (passager, vol) non annule
+
+class Paiement {
+ -idPaiement : int
+ -montant : double
+ -datePaiement : Date
+ -mode : ModePaiement
+ -statutRemboursement : StatutRemboursement
+ +rembourser(taux : double) : void
+ +afficher() : void
+}
+
+class Agence {
+ -passagers : vector<Passager*>
+ -vols : vector<Vol*>
+ -reservations : vector<Reservation*>
+ +enregistrerPassager() : void
+ +ajouterVol() : void
+ +afficherVolsDisponibles() : void
+ +rechercherVols() : void
+ +effectuerReservation() : void
+ +enregistrerPaiement() : void
+ +annulerReservation() : void
+ +consulterReservation() : void
+ +afficherInfosReservation() : void
+}
+
+Passager "1" -- "0..*" Reservation : effectue >
+Vol "1" -- "0..*" Reservation : concerne >
+Reservation "1" *-- "0..1" Paiement : est reglee par >
+Agence o-- "0..*" Passager
+Agence o-- "0..*" Vol
+Agence o-- "0..*" Reservation
+Reservation ..> StatutReservation
+Paiement ..> ModePaiement
+Paiement ..> StatutRemboursement
+
+@enduml
